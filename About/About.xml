@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
+
 <ModMetaData>
-	<packageId>jalapenolabs.rimworld.fishingisfun</packageId>
 	<name>Fishing Is Fun</name>
 	<author>JalapenoLabs</author>
-
+	<modVersion>2025.7.30</modVersion>
+	
 	<supportedVersions>
 		<li>1.6</li>
 	</supportedVersions>
-
+	
 	<modDependencies>
 		<li>
 			<packageId>Ludeon.RimWorld.Odyssey</packageId>
@@ -17,10 +18,12 @@
 			</steamWorkshopUrl>
 		</li>
 	</modDependencies>
-
+	
 	<loadAfter>
 		<li>Ludeon.RimWorld.Odyssey</li>
 	</loadAfter>
-
-	<description>Rimworld Fishing Is Fun</description>
+	
+	<description>Make the Odyssey DLC's fishing activity count as recreation and grant a mood buff after a long fishing session.</description>
+	<packageId>jalapenolabs.rimworld.fishingisfun</packageId>
+	<url>https://github.com/JalapenoLabs/rimworld-fishing-is-fun</url>
 </ModMetaData>
