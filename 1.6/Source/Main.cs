@@ -7,17 +7,6 @@
  * MIT License
  */
 
-
-/*************************************************************************
-*
- * JALAPENO LABS
- * __________________
- *
- * [2025] Jalapeno Labs LLC
- * MIT License
- */
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -30,83 +19,55 @@ using Verse.AI;
 namespace FishingIsFun {
     public class ModEntry : Mod {
         public ModEntry(ModContentPack content) : base(content) {
-            var harmony = new Harmony("jalapenolabs.fishingisfun");
-            harmony.PatchAll();
+            new Harmony("jalapenolabs.fishingisfun").PatchAll();
         }
     }
 
     [HarmonyPatch]
     public static class Patch_JobDriver_Fish_AddRecreation {
-        // Dynamically find Odyssey's JobDriver_Fish.MakeNewToils
+        // Target the MakeNewToils method of JobDriver_Fish directly
         static MethodBase TargetMethod() {
-            // Common type names to try; Odyssey may use one of these
-            var candidates = new[] {
-                "JobDriver_Fish",
-                "RimWorld.JobDriver_Fish"
-            };
-
-            foreach (var name in candidates) {
-                var target = AccessTools.TypeByName(name);
-                if (target != null) {
-                    var toil = AccessTools.Method(target, "MakeNewToils");
-                    if (toil != null){
-                        return toil;
-                    };
-                }
-            }
-
-            Log.Error("[FishingIsFun] Could not find JobDriver_Fish.MakeNewToils. Is Odyssey enabled and loaded before this mod?");
-            return null;
+            var type = AccessTools.TypeByName("JobDriver_Fish");
+            return type != null
+                ? AccessTools.Method(type, "MakeNewToils")
+                : throw new Exception("JobDriver_Fish not found. Ensure Odyssey is loaded.");
         }
 
-        // Postfix to inject recreation gain and mood buff during the active fishing toil
-        static void Postfix(object __instance, ref IEnumerable<Toil> __result) {
-            if (__result == null) {
-                return;
-            };
+        // Postfix to inject recreation gain and mood buff during the fishing toil
+        static void Postfix(JobDriver_Fish __instance, ref IEnumerable<Toil> __result) {
+            if (__result == null) return;
 
             var toils = __result.ToList();
-            if (toils.Count == 0) {
-                return;
-            };
+            if (!toils.Any()) return;
 
-            // Heuristic: the final toil is the long, “do the fishing” toil
+            // Heuristic: last toil is active fishing
             var fishingToil = toils.Last();
-            long startTick = -1L;
 
-            // Record when fishing starts
-            fishingToil.initAction += () => {
-                startTick = Find.TickManager.TicksGame;
-            };
+            // Cache pawn and needs once to avoid reflection each tick
+            var pawn = __instance.pawn;
+            var joyNeed = pawn.needs?.joy;
 
-            // Append recreation gain to its tickAction
+            // If no joy need, skip all patches
+            if (joyNeed == null) {
+                __result = toils;
+                return;
+            }
+
+            long startTick = -1;
+
+            // Record start of fishing
+            fishingToil.initAction += () => startTick = Find.TickManager.TicksGame;
+
+            // Recreation gain per tick (captures joyNeed)
             fishingToil.tickAction += () => {
-                // __instance is a JobDriver; get its pawn via reflection if needed
-                var pawnField = __instance.GetType().GetField("pawn", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                var pawn = pawnField?.GetValue(__instance) as Pawn;
-                if (pawn == null) {
-                    return;
-                };
-
-                var joy = pawn.needs?.joy;
-                if (joy == null) {
-                    return;
-                };
-
-                // Small, fixed per-tick recreation; Meditative suits quiet fishing
-                joy.GainJoy(0.001f, JoyKindDefOf.Meditative);
+                joyNeed.GainJoy(0.001f, JoyKindDefOf.Meditative);
             };
 
-            // On finish, give the PleasantFishingTrip thought if fished >= 1 hour
+            // On finish, grant mood buff if fished >= 1 hour
             fishingToil.AddFinishAction(() => {
-                var pawnField = __instance.GetType().GetField("pawn", BindingFlags.Instance | BindingFlags.Public | BindingFlags.NonPublic);
-                var pawn = pawnField?.GetValue(__instance) as Pawn;
-                if (pawn == null) {
-                    return;
-                };
-
+                if (startTick < 0) return;
                 if (Find.TickManager.TicksGame - startTick >= 2500) {
-                    pawn.needs?.mood?.thoughts?.memories
+                    pawn.needs.mood.thoughts.memories
                         .TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
                 }
             });
