@@ -1,0 +1,22 @@
+<ThoughtDef ParentName="MemoryThought">
+  <defName>PleasantFishingTrip</defName>
+  <!-- ~6 in-game hours. In RimWorld, time durations are set in days;
+   6 hours is 0.25 days (since 1 day = 24 hours).
+   This will translate to 15,000 ticks (as 1 hour = 2,500 ticks). -->
+  <durationDays>0.25</durationDays>
+  <!-- a pawn can have only one instance of this thought at a time.
+   This ensures the buff refreshes its duration on subsequent fishing trips
+   instead of stacking multiple moodlets.
+   With stackLimit=1, if the pawn already has the “pleasant fishing trip” thought,
+   gaining it again will reset the timer rather than create a second stack. -->
+  <stackLimit>1</stackLimit>
+  <!-- (a standard memory thought) since this is a transient mood boost. -->
+  <thoughtClass>Thought_Memory</thoughtClass>
+  <label>pleasant fishing trip</label>
+  <description>It was nice to enjoy some peace and quiet for a while.</description>
+  <stages>
+    <li>
+      <baseMoodEffect>3</baseMoodEffect>
+    </li>
+  </stages>
+</ThoughtDef>
