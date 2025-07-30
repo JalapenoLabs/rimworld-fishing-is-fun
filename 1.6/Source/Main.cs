@@ -32,31 +32,34 @@ namespace FishingIsFun {
     public static class Patch_JobDriver_Fish_AddRecreation {
         // === Constants ===
         private const int   BuffThresholdTicks = 2500;    // >= 1 in‑game hour
-        private const float JoyGainPerTick     = 0.000144f;// ~36% recreation per hour (vanilla meditation rate)
+        private const float JoyGainPerTick     = 0.000024f;// ~6% recreation per hour
         private const int   LogIntervalTicks   = 500;     // debug log every X fishing ticks
 
         // Target the Odyssey fishing job’s MakeNewToils() method
         static MethodBase TargetMethod() {
             var type = AccessTools.TypeByName("JobDriver_Fish");
-            if (type == null)
+            if (type == null) {
                 throw new Exception("JobDriver_Fish not found. Ensure Odyssey is loaded.");
+            }
             return AccessTools.Method(type, "MakeNewToils");
         }
 
         // Postfix: add rec gain and mood buff
         static void Postfix(JobDriver_Fish __instance, ref IEnumerable<Toil> __result) {
-            if (__result == null) return;
+            if (__result == null) {
+                return;
+            };
             var toils = __result.ToList();
 
             // Log & safety check
-            Log.Message($"[FishingIsFun] Patching JobDriver_Fish.MakeNewToils – found {toils.Count} toils");
+            Log.Message($"[FishingIsFun] Patching JobDriver_Fish.MakeNewToils - found {toils.Count} toils");
             if (toils.Count < 2) {
                 Log.Error("[FishingIsFun] Unexpected toil count < 2; skipping patch");
                 __result = toils;
                 return;
             }
             for (int i = 0; i < toils.Count; i++) {
-                Log.Message($"[FishingIsFun] Toil #{i} – CompleteMode: {toils[i].defaultCompleteMode}");
+                Log.Message($"[FishingIsFun] Toil #{i} - CompleteMode: {toils[i].defaultCompleteMode}");
             }
 
             // The second‑to‑last toil is the actual fishing loop
@@ -64,20 +67,24 @@ namespace FishingIsFun {
             var pawn        = __instance.pawn;
             var joyNeed     = pawn.needs?.joy;
             if (joyNeed == null) {
-                Log.Warning($"[FishingIsFun] Pawn {pawn} has no joy need; skipping recreation patch");
+                // Log.Warning($"[FishingIsFun] Pawn {pawn} has no joy need; skipping recreation patch");
                 __result = toils;
                 return;
             }
 
             // Counter for only active fishing ticks
             int ticksFished = 0;
+            bool hasStartedFishing = false;
 
             // Reset counter when fishing starts
             fishingToil.initAction += () => {
-                ticksFished = 0;
-                Log.Message($"[FishingIsFun] {pawn.LabelShort} started fishing (counter reset)");
+                // only reset on the very first entry into the fishing loop
+                if (!hasStartedFishing) {
+                    hasStartedFishing = true;
+                    ticksFished = 0;
+                    Log.Message($"[FishingIsFun] {pawn.LabelShort} started fishing (counter reset)");
+                }
             };
-
             // Each tick of actual fishing
             fishingToil.tickAction += () => {
                 ticksFished++;
