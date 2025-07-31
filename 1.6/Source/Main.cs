@@ -172,4 +172,49 @@ namespace FishingIsFun {
             __result = toils;
         }
     }
+
+    [HarmonyPatch]
+    public static class Patch_JobDriver_Fish_RareCatchMood {
+        // Target the Odyssey fishing job’s completion method
+        static MethodBase TargetMethod() {
+            var type = AccessTools.TypeByName("JobDriver_Fish");
+            if (type == null) {
+                 throw new Exception("JobDriver_Fish not found. Ensure Odyssey is loaded.");
+            };
+            return AccessTools.Method(type, "CompleteFishingToil");
+        }
+
+        // Postfix: grant mood thought if an "excellent catch" was made
+        static void Postfix(object __instance) {
+            // __instance is the JobDriver_Fish instance
+            // Get the pawn doing the fishing
+            Pawn pawn = Traverse.Create(__instance).Property("pawn").GetValue<Pawn>();
+            if (pawn == null) {
+                return;
+            };
+            
+            // Determine what item was caught
+            Thing caughtItem = pawn.carryTracker?.CarriedThing;
+            if (caughtItem == null) {
+                // If pawn isn't carrying it, check items at pawn's position (drop spot)
+                IntVec3 cell = pawn.Position;
+                foreach (Thing thing in pawn.Map.thingGrid.ThingsListAt(cell)) {
+                    if (thing.def.category == ThingCategory.Item) {
+                        caughtItem = thing;
+                        break;
+                    }
+                }
+            }
+            if (caughtItem == null) {
+                return;
+            };
+            
+            // Check if the caught item is a *fish* or an *unusual catch*
+            bool isFish = caughtItem.def.thingCategories?.Any(tc => tc.defName == "Fish") ?? false;
+            if (!isFish) {
+                // Unusual (non-fish) item caught – grant the special mood buff
+                pawn.needs.mood?.thoughts?.memories?.TryGainMemory(ThoughtDef.Named("ExcellentFishingCatch"));
+            }
+        }
+    }
 }
