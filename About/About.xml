@@ -24,7 +24,7 @@
 	</loadAfter>
 	
 	<modIconPath IgnoreIfNoMatchingField="True">FishingIsFun/UI/Logo</modIconPath>
-	<description>Make the Odyssey DLC's fishing activity count as recreation and grant a mood buff after a long fishing session.</description>
+	<description>Improves the Odyssey DLC's fishing activity, to slowly gain recreation while fishing and grants a mood buff after a long fishing session.</description>
 	<packageId>jalapenolabs.rimworld.fishingisfun</packageId>
 	<url>https://github.com/JalapenoLabs/rimworld-fishing-is-fun</url>
 </ModMetaData>
