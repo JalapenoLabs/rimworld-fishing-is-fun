@@ -15,12 +15,20 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Setup Rimworld DLL
-        uses: actions/checkout@v4
+      - name: Load SSH key
+        uses: webfactory/ssh-agent@v0.7.0
         with:
-          repository: JalapenoLabs/RimworldDll
-          token: ${{ secrets.SSH_PRIVATE_KEY }}
-          path: RimWorldWin64_Data
+          ssh-private-key: ${{ secrets.SSH_PRIVATE_KEY }}
+
+      - name: Trust GitHub’s host key
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan github.com >> ~/.ssh/known_hosts
+
+      - name: Setup Rimworld DLL
+        working-directory: ../..
+        run: |
+          git clone git@github.com:JalapenoLabs/RimworldDll.git RimWorldWin64_Data
 
       - name: Setup .NET
         uses: actions/setup-dotnet@v4
@@ -32,3 +40,15 @@ jobs:
 
       - name: Build
         run: dotnet build .vscode
+
+      - name: Validate XML (xmllint)
+        uses: phpcsstandards/xmllint-validate@v1
+        with:
+          pattern: "1.6/Defs/**/*.xml"
+          show-in-pr: true
+
+      - name: Validate XML (xmllint)
+        uses: phpcsstandards/xmllint-validate@v1
+        with:
+          pattern: "About/About.xml"
+          show-in-pr: true
