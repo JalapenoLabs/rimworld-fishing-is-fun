@@ -17,9 +17,26 @@
     <label>pleasant fishing trip</label>
     <stages>
       <li>
+        <!-- +3 mood -->
         <label>Went fishing</label>
         <description>It was nice to enjoy some peace while fishing for a bit.</description>
         <baseMoodEffect>3</baseMoodEffect>
+      </li>
+    </stages>
+  </ThoughtDef>
+  <ThoughtDef>
+    <defName>ExcellentFishingCatch</defName>
+    <!-- lasts ~1 day -->
+    <durationDays>1</durationDays>
+    <stackLimit>1</stackLimit>
+    <thoughtClass>Thought_Memory</thoughtClass>
+    <label>caught something amazing</label>
+    <stages>
+      <li>
+        <!-- +5 mood -->
+        <label>Excellent catch</label>
+        <description>What a find! Catching that was a real thrill.</description>
+        <baseMoodEffect>5</baseMoodEffect>
       </li>
     </stages>
   </ThoughtDef>
