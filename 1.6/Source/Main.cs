@@ -13,26 +13,84 @@ using System.Linq;
 using System.Reflection;
 using HarmonyLib;
 using RimWorld;
+using UnityEngine;
 using Verse;
 using Verse.AI;
 
 
 namespace FishingIsFun {
+    // Mod entry point & definition
     public class ModEntry : Mod {
+        // Static reference to settings for easy access in patches
+        public static FishingIsFunSettings Settings;
+
         public ModEntry(ModContentPack content) : base(content) {
-            // <<<— will log on startup to confirm the DLL is loaded
-            Log.Message("[FishingIsFun] ⚓ ModEntry constructor running - Fishing Is Fun loaded!");
+            // Will log on startup to confirm the DLL is loaded
+            Settings = GetSettings<FishingIsFunSettings>();
 
             var harmony = new Harmony("jalapenolabs.rimworld.fishingisfun");
             harmony.PatchAll();
+
+            Log.Message("⚓🐟 Fishing Is Fun mod was successfully loaded!");
+        }
+
+        // Provide a name for the mod settings category
+        public override string SettingsCategory() => "Fishing Is Fun";
+
+        // Draw the settings window contents
+        public override void DoSettingsWindowContents(Rect inRect) {
+            Listing_Standard listing = new Listing_Standard();
+            listing.Begin(inRect);
+
+            // Checkbox for on/off
+            listing.CheckboxLabeled(
+                "Enable mood buff", 
+                ref Settings.enableMoodBuff
+            );
+
+            // Label and slider for the hours needed for the mood buff
+            listing.Label($"Hours of fishing required for a mood buff: {Settings.hoursNeededForBuff} hour(s)");
+            // Slider returns a float; round it to int for whole hours
+            float hours = Settings.hoursNeededForBuff;
+
+            // Range 0 to 12 hours
+            hours = listing.Slider(hours, 0f, 12f);
+
+            // Round the value to nearest 0.5 hour
+            Settings.hoursNeededForBuff = Mathf.Round(hours * 2f) / 2f;
+
+            listing.End();
+            base.DoSettingsWindowContents(inRect);
         }
     }
+
+    // /////////////////////////// //
+    //       Mod Settings       //
+    // /////////////////////////// //
+
+    public class FishingIsFunSettings : ModSettings {
+        // The configurable hours threshold (default 3 hours)
+        public bool enableMoodBuff = true;
+        public float hoursNeededForBuff = 3;
+
+        // Save/load the setting value
+        public override void ExposeData() {
+            base.ExposeData();
+            Scribe_Values.Look(ref enableMoodBuff, "enableMoodBuff", true);
+            Scribe_Values.Look(ref hoursNeededForBuff, "hoursNeededForBuff", 3);
+        }
+    }
+
+    // /////////////////////////// //
+    //       Harmony Patches       //
+    // /////////////////////////// //
 
     [HarmonyPatch]
     public static class Patch_JobDriver_Fish_AddRecreation {
         // === Constants ===
-        private const int   BuffThresholdTicks = 2500 * 3;    // >= 3 in‑game hours
-        private const float JoyGainPerTick     = 0.000024f;// ~6% recreation per hour
+        private const int TicksPerHour = 2500; // >= 1 in‑game hours
+        private const float JoyGainPerTick = 0.000024f;// ~6% recreation per hour
+        private static int BuffThresholdTicks => Mathf.RoundToInt(TicksPerHour * (ModEntry.Settings?.hoursNeededForBuff ?? 3f));
 
         // Target the Odyssey fishing job’s MakeNewToils() method
         static MethodBase TargetMethod() {
@@ -61,11 +119,6 @@ namespace FishingIsFun {
             var fishingToil = toils[toils.Count - 2];
             var pawn        = __instance.pawn;
             var joyNeed     = pawn.needs?.joy;
-            // if (joyNeed == null) {
-            //     // Log.Warning($"[FishingIsFun] Pawn {pawn} has no joy need; skipping recreation patch");
-            //     __result = toils;
-            //     return;
-            // }
 
             // Counter for only active fishing ticks
             int ticksFished = 0;
@@ -78,6 +131,11 @@ namespace FishingIsFun {
                 }
                 hasStartedFishing = true;
                 ticksFished = 0;
+
+                // If the user set hours to 0 to have the buff be instant...
+                if (ModEntry.Settings.enableMoodBuff && BuffThresholdTicks == 0) {
+                    pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
+                }
                 // Log.Message($"[FishingIsFun] {pawn.LabelShort} started fishing (counter reset)");
             };
 
@@ -88,9 +146,9 @@ namespace FishingIsFun {
                     joyNeed.GainJoy(JoyGainPerTick, JoyKindDefOf.Meditative);
                 }
 
-                if (ticksFished >= BuffThresholdTicks && ticksFished % 500 == 0) {
+                // Once every 1250 ticks (30 rimworld minutes)
+                if (ModEntry.Settings.enableMoodBuff && ticksFished >= BuffThresholdTicks && ticksFished % 1250 == 0) {
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
-                    // Debug log every 500 ticks
                     // Log.Message($"[FishingIsFun] {pawn.LabelShort} fished for {ticksFished} ticks; recreation is now {joyNeed.CurLevel:P0}");
                 }
             };
