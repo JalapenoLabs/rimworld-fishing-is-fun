@@ -41,7 +41,7 @@ jobs:
       - name: Record original DLL checksum
         id: dll_hash
         run: |
-          sha256sum 1.6\Assemblies\FishingIsFun.dll \
+          sha256sum 1.6/Assemblies/FishingIsFun.dll \
             | cut -d' ' -f1 \
             | tee original.hash
           echo "hash=$(cat original.hash)" >> $GITHUB_OUTPUT
@@ -83,7 +83,7 @@ jobs:
 
       - name: Fail if DLL changed
         run: |
-          new=$(sha256sum 1.6\Assemblies\FishingIsFun.dll | cut -d' ' -f1)
+          new=$(sha256sum 1.6/Assemblies/FishingIsFun.dll | cut -d' ' -f1)
           echo "Original: ${{ steps.dll_hash.outputs.hash }}"
           echo "Current:  $new"
           if [ "$new" != "${{ steps.dll_hash.outputs.hash }}" ]; then
