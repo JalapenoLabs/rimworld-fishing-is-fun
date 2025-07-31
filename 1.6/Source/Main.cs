@@ -42,7 +42,7 @@ namespace FishingIsFun {
             Listing_Standard listing = new Listing_Standard();
             listing.Begin(inRect);
 
-            // Checkbox for on/off
+            // Checkbox for mood buff on/off
             listing.CheckboxLabeled(
                 "Enable mood buff", 
                 ref Settings.enableMoodBuff
@@ -59,6 +59,12 @@ namespace FishingIsFun {
             // Round the value to nearest 0.5 hour
             Settings.hoursNeededForBuff = Mathf.Round(hours * 2f) / 2f;
 
+            // Checkbox for recreation gain on/off
+            listing.CheckboxLabeled(
+                "Enable recreation gain", 
+                ref Settings.enableRecreationGain
+            );
+
             listing.End();
             base.DoSettingsWindowContents(inRect);
         }
@@ -72,12 +78,14 @@ namespace FishingIsFun {
         // The configurable hours threshold (default 3 hours)
         public bool enableMoodBuff = true;
         public float hoursNeededForBuff = 3;
+        public bool enableRecreationGain = true;
 
         // Save/load the setting value
         public override void ExposeData() {
             base.ExposeData();
             Scribe_Values.Look(ref enableMoodBuff, "enableMoodBuff", true);
             Scribe_Values.Look(ref hoursNeededForBuff, "hoursNeededForBuff", 3);
+            Scribe_Values.Look(ref enableRecreationGain, "enableRecreationGain", true);
         }
     }
 
@@ -143,7 +151,7 @@ namespace FishingIsFun {
             // Each tick of actual fishing
             fishingToil.tickAction += () => {
                 ticksFished++;
-                if (joyNeed != null) {
+                if (ModEntry.Settings?.enableRecreationGain == true && joyNeed != null) {
                     joyNeed.GainJoy(JoyGainPerTick, JoyKindDefOf.Meditative);
                 }
 

@@ -13,11 +13,17 @@ This was compiled with Dotnet 9.0+ make sure you have it installed or a later ve
 
 Clone this repository into your `steamapps/common/RimWorld/Mods` folder.
 
-### If using Visual Studio Code:
-Open this repository in Visual Studio Code, and use Ctrl+Shift+B to build the assemblies for the mod.
+### Using the command line:
 
-### If using the command line:
+```shell
+make
+```
 
-```powershell
+Or if you don't have `make` installed, you can run:
+
+```shell
 dotnet build .vscode
 ```
+
+### Using Visual Studio Code:
+Open this repository in Visual Studio Code, and use Ctrl+Shift+B to build the assemblies for the mod.

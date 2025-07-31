@@ -24,7 +24,17 @@
 	</loadAfter>
 	
 	<modIconPath IgnoreIfNoMatchingField="True">FishingIsFun/UI/Logo</modIconPath>
-	<description>Improves the Odyssey DLC's fishing activity, to slowly gain recreation while fishing and grants a mood buff after a long fishing session.</description>
 	<packageId>jalapenolabs.rimworld.fishingisfun</packageId>
 	<url>https://github.com/JalapenoLabs/rimworld-fishing-is-fun</url>
+	<description>Upgrade the Odyssey DLC fishing experience, have your pawns slowly gain recreation while fishing and grant a mood buff after a long fishing session.
+
+Fully customizable, you can change the mood buff required duration, enable/disable the mood buff, and enable/disable the recreation gain while fishing.
+
+Alex Navarro
+alex@jalapenolabs.io
+
+Website: https://www.jalapenolabs.io/
+Discord: https://www.jalapenolabs.io/discord
+Patreon: https://www.jalapenolabs.io/patreon
+	</description>
 </ModMetaData>
