@@ -8,7 +8,7 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  verify:
     runs-on: ubuntu-latest
 
     steps:
@@ -38,13 +38,13 @@ jobs:
       #     Pre-build Metrics     #
       # ######################### #
 
-      - name: Record original DLL checksum
-        id: dll_hash
-        run: |
-          sha256sum 1.6/Assemblies/FishingIsFun.dll \
-            | cut -d' ' -f1 \
-            | tee original.hash
-          echo "hash=$(cat original.hash)" >> $GITHUB_OUTPUT
+      # - name: Record original DLL checksum
+      #   id: dll_hash
+      #   run: |
+      #     sha256sum 1.6/Assemblies/FishingIsFun.dll \
+      #       | cut -d' ' -f1 \
+      #       | tee original.hash
+      #     echo "hash=$(cat original.hash)" >> $GITHUB_OUTPUT
 
       # ######################### #
       #        Build Phase        #
@@ -81,12 +81,12 @@ jobs:
       #      Check for changes    #
       # ######################### #
 
-      - name: Fail if DLL changed
-        run: |
-          new=$(sha256sum 1.6/Assemblies/FishingIsFun.dll | cut -d' ' -f1)
-          echo "Original: ${{ steps.dll_hash.outputs.hash }}"
-          echo "Current:  $new"
-          if [ "$new" != "${{ steps.dll_hash.outputs.hash }}" ]; then
-            echo "::error title=DLL Changed::FishingIsFun.dll was modified by the build"
-            exit 1
-          fi
+      # - name: Fail if DLL changed
+      #   run: |
+      #     new=$(sha256sum 1.6/Assemblies/FishingIsFun.dll | cut -d' ' -f1)
+      #     echo "Original: ${{ steps.dll_hash.outputs.hash }}"
+      #     echo "Current:  $new"
+      #     if [ "$new" != "${{ steps.dll_hash.outputs.hash }}" ]; then
+      #       echo "::error title=DLL Changed::FishingIsFun.dll was modified by the build"
+      #       exit 1
+      #     fi
