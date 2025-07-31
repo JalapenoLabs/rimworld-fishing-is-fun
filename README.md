@@ -32,3 +32,21 @@ dotnet build .vscode
 
 ### Using Visual Studio Code:
 Open this repository in Visual Studio Code, and use Ctrl+Shift+B to build the assemblies for the mod.
+
+# Steam URL:
+https://steamcommunity.com/sharedfiles/filedetails/?id=3538562620&searchtext=
+
+# Repository:
+View the source code, contribute, or report issues on GitHub:
+https://github.com/JalapenoLabs/rimworld-fishing-is-fun
+
+# License:
+This mod is licensed under the [MIT License](https://opensource.org/licenses/MIT)
+
+# Author:
+Alex Navarro
+alex@jalapenolabs.io
+
+Website: https://www.jalapenolabs.io/
+Discord: https://www.jalapenolabs.io/discord
+Patreon: https://www.jalapenolabs.io/patreon
