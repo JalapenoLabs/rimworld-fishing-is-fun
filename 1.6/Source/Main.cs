@@ -89,6 +89,7 @@ namespace FishingIsFun {
     public static class Patch_JobDriver_Fish_AddRecreation {
         // === Constants ===
         private const int TicksPerHour = 2500; // >= 1 in‑game hours
+        private const int TicksPerHalfHour = TicksPerHour / 2; // 1250 ticks = 30 minutes
         private const float JoyGainPerTick = 0.000024f;// ~6% recreation per hour
         private static int BuffThresholdTicks => Mathf.RoundToInt(TicksPerHour * (ModEntry.Settings?.hoursNeededForBuff ?? 3f));
 
@@ -133,7 +134,7 @@ namespace FishingIsFun {
                 ticksFished = 0;
 
                 // If the user set hours to 0 to have the buff be instant...
-                if (ModEntry.Settings.enableMoodBuff && BuffThresholdTicks == 0) {
+                if (ModEntry.Settings?.enableMoodBuff == true && BuffThresholdTicks == 0) {
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
                 }
                 // Log.Message($"[FishingIsFun] {pawn.LabelShort} started fishing (counter reset)");
@@ -146,8 +147,8 @@ namespace FishingIsFun {
                     joyNeed.GainJoy(JoyGainPerTick, JoyKindDefOf.Meditative);
                 }
 
-                // Once every 1250 ticks (30 rimworld minutes)
-                if (ModEntry.Settings?.enableMoodBuff == true && ticksFished >= BuffThresholdTicks && ticksFished % 1250 == 0) {
+                // Once every 30 rimworld minutes
+                if (ModEntry.Settings?.enableMoodBuff == true && ticksFished >= BuffThresholdTicks && ticksFished % TicksPerHalfHour == 0) {
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
                     // Log.Message($"[FishingIsFun] {pawn.LabelShort} fished for {ticksFished} ticks; recreation is now {joyNeed.CurLevel:P0}");
                 }
