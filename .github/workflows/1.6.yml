@@ -1,0 +1,34 @@
+name: CI
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Rimworld DLL
+        uses: actions/checkout@v4
+        with:
+          repository: JalapenoLabs/RimworldDll
+          token: ${{ secrets.SSH_PRIVATE_KEY }}
+          path: RimWorldWin64_Data
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '9.0.x'
+
+      - name: Dotnet restore
+        run: dotnet restore .vscode
+
+      - name: Build
+        run: dotnet build .vscode
