@@ -147,7 +147,7 @@ namespace FishingIsFun {
                 }
 
                 // Once every 1250 ticks (30 rimworld minutes)
-                if (ModEntry.Settings.enableMoodBuff && ticksFished >= BuffThresholdTicks && ticksFished % 1250 == 0) {
+                if (ModEntry.Settings?.enableMoodBuff == true && ticksFished >= BuffThresholdTicks && ticksFished % 1250 == 0) {
                     pawn.needs.mood.thoughts.memories.TryGainMemory(ThoughtDef.Named("PleasantFishingTrip"));
                     // Log.Message($"[FishingIsFun] {pawn.LabelShort} fished for {ticksFished} ticks; recreation is now {joyNeed.CurLevel:P0}");
                 }
