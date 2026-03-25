@@ -14,6 +14,7 @@
 
 		<DebugSymbols>false</DebugSymbols>
 		<AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+		<EnableDefaultCompileItems>false</EnableDefaultCompileItems>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -21,7 +22,7 @@
 		<Compile Include="1.6/Source/*" />
 
 		<!-- Rimworld — references the shared root-level RimworldForCICD submodule -->
-		<Reference Include="../RimworldForCICD/Managed/*.dll">
+		<Reference Include="../../RimworldForCICD/Managed/*.dll">
 			<Private>False</Private>
 		</Reference>
 
