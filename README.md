@@ -13,25 +13,27 @@ This is intended to make the Odyssey DLC’s fishing activity count as recreatio
 2. ***Mood Buff***: If the pawn spent at least 1 in-game hour (2,500 ticks) fishing continuously, they receive a +3 "Pleasant Fishing Trip" mood thought lasting 6 hours.
 3. ***Configurable***: You can enable/disable the mood buff or recreation, and you can tweak the buff reward time in the mod settings.
 
-# Building & compiling from the source:
-This was compiled with Dotnet 9.0+ make sure you have it installed or a later version.
+# Building from source
 
-Clone this repository into your `steamapps/common/RimWorld/Mods` folder.
+This mod is part of the [rimworld-mods monorepo](https://github.com/JalapenoLabs/rimworld-mods), which provides the shared RimWorld DLLs and build tooling. **You must clone the monorepo — not this repository directly — in order to build.**
 
-### Using the command line:
+### Prerequisites
+- [.NET 9.0+](https://dotnet.microsoft.com/download)
+- [Mage](https://magefile.org/) — `go install github.com/magefile/mage/mage@latest`
 
-```shell
-make
-```
-
-Or if you don't have `make` installed, you can run:
+### Steps
 
 ```shell
-dotnet build .vscode
+git clone --recurse-submodules https://github.com/JalapenoLabs/rimworld-mods
+cd rimworld-mods
+mage build fishing-is-fun
 ```
 
-### Using Visual Studio Code:
-Open this repository in Visual Studio Code, and use Ctrl+Shift+B to build the assemblies for the mod.
+Or with Make:
+
+```shell
+make -C mods/fishing-is-fun
+```
 
 # Steam URL:
 https://steamcommunity.com/sharedfiles/filedetails/?id=3538562620&searchtext=
