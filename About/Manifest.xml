@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<Manifest>
+  <identifier>jalapenolabs.rimworld.fishingisfun</identifier>
+  <version>0.0.1</version>
+  <targetVersions>
+    <li>1.6.0</li>
+  </targetVersions>
+  <dependencies>
+    <li>Ludeon.RimWorld.Odyssey</li>
+  </dependencies>
+  <incompatibleWith>
+  </incompatibleWith>
+  <loadBefore>
+  </loadBefore>
+  <loadAfter>
+  </loadAfter>
+  <manifestUri>https://raw.githubusercontent.com/JalapenoLabs/rimworld-fishing-is-fun/main/About/Manifest.xml</manifestUri>
+  <downloadUri>https://github.com/JalapenoLabs/rimworld-fishing-is-fun/releases/latest</downloadUri>
+</Manifest>
